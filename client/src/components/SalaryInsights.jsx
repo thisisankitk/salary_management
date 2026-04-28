@@ -1,28 +1,6 @@
 import { useEffect, useState } from "react";
+import { employeeOptionsApi } from "../api/employeeOptions";
 import { salaryInsightsApi } from "../api/salaryInsights";
-
-const countries = [
-  "",
-  "India",
-  "United States",
-  "United Kingdom",
-  "Germany",
-  "Canada",
-];
-
-const jobTitles = [
-  "",
-  "Software Engineer",
-  "Senior Software Engineer",
-  "Engineering Manager",
-  "Product Manager",
-  "Data Analyst",
-  "QA Engineer",
-  "DevOps Engineer",
-  "HR Manager",
-  "Finance Manager",
-  "UX Designer",
-];
 
 function formatSalary(value) {
   if (value === null || value === undefined) return "N/A";
@@ -35,9 +13,33 @@ function SalaryInsights() {
     country: "",
     jobTitle: "",
   });
+
+  const [options, setOptions] = useState({
+    countries: [],
+    job_titles: [],
+  });
+
   const [insights, setInsights] = useState(null);
   const [status, setStatus] = useState("idle");
+  const [optionsStatus, setOptionsStatus] = useState("idle");
   const [errorMessage, setErrorMessage] = useState("");
+
+  useEffect(() => {
+    async function loadOptions() {
+      try {
+        setOptionsStatus("loading");
+
+        const response = await employeeOptionsApi.list();
+
+        setOptions(response);
+        setOptionsStatus("success");
+      } catch (_error) {
+        setOptionsStatus("error");
+      }
+    }
+
+    loadOptions();
+  }, []);
 
   useEffect(() => {
     async function loadInsights() {
@@ -87,9 +89,11 @@ function SalaryInsights() {
         <label>
           Country
           <select name="country" value={filters.country} onChange={handleChange}>
-            {countries.map((country) => (
-              <option key={country || "all-countries"} value={country}>
-                {country || "All countries"}
+            <option value="">All countries</option>
+
+            {options.countries.map((country) => (
+              <option key={country} value={country}>
+                {country}
               </option>
             ))}
           </select>
@@ -102,14 +106,27 @@ function SalaryInsights() {
             value={filters.jobTitle}
             onChange={handleChange}
           >
-            {jobTitles.map((jobTitle) => (
-              <option key={jobTitle || "all-job-titles"} value={jobTitle}>
-                {jobTitle || "All job titles"}
+            <option value="">All job titles</option>
+
+            {options.job_titles.map((jobTitle) => (
+              <option key={jobTitle} value={jobTitle}>
+                {jobTitle}
               </option>
             ))}
           </select>
         </label>
       </div>
+
+      {optionsStatus === "loading" && (
+        <p className="notice">Loading filter options...</p>
+      )}
+
+      {optionsStatus === "error" && (
+        <p className="notice">
+          Filter options could not be loaded. Salary insights still work with
+          default filters.
+        </p>
+      )}
 
       {isLoading && <p className="notice">Loading salary insights...</p>}
 
@@ -144,9 +161,7 @@ function SalaryInsights() {
           </div>
 
           {summary.employee_count === 0 && (
-            <p className="notice">
-              No employees found for the selected filters.
-            </p>
+            <p className="notice">No employees found for the selected filters.</p>
           )}
         </>
       )}
