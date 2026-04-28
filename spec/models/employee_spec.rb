@@ -2,18 +2,7 @@ require "rails_helper"
 
 RSpec.describe Employee, type: :model do
   describe "validations" do
-    subject(:employee) do
-      described_class.new(
-        full_name: "Test User",
-        job_title: "Software Engineer",
-        country: "India",
-        salary: 2_500_000,
-        currency: "INR",
-        department: "Engineering",
-        employment_type: "full_time",
-        hired_on: Date.new(2022, 1, 10)
-      )
-    end
+    subject(:employee) { build(:employee) }
 
     it "is valid with all required attributes" do
       expect(employee).to be_valid
@@ -87,6 +76,21 @@ RSpec.describe Employee, type: :model do
 
       expect(employee).not_to be_valid
       expect(employee.errors[:hired_on]).to include("can't be blank")
+    end
+
+    it "requires salary to be positive" do
+      employee.salary = -1
+
+      expect(employee).not_to be_valid
+      expect(employee.errors[:salary]).to include("must be greater than 0")
+    end
+
+    it "allows supported employment types" do
+      Employee::EMPLOYMENT_TYPES.each do |employment_type|
+        employee.employment_type = employment_type
+
+        expect(employee).to be_valid
+      end
     end
   end
 end
