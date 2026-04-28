@@ -174,3 +174,13 @@ button:disabled {
     flex-direction: column;
   }
 }
+
+.danger-button {
+  border-color: #fecaca;
+  color: #991b1b;
+  background: #fef2f2;
+}
+
+.danger-button:hover:not(:disabled) {
+  background: #fee2e2;
+}

@@ -9,6 +9,7 @@ function EmployeeList() {
   const [refreshToken, setRefreshToken] = useState(0);
   const [status, setStatus] = useState("idle");
   const [errorMessage, setErrorMessage] = useState("");
+  const [deletingEmployeeId, setDeletingEmployeeId] = useState(null);
 
   const loadEmployees = useCallback(async () => {
     try {
@@ -33,9 +34,39 @@ function EmployeeList() {
     loadEmployees();
   }, [loadEmployees, refreshToken]);
 
+  function refreshEmployees() {
+    setRefreshToken((currentValue) => currentValue + 1);
+  }
+
   function handleEmployeeCreated() {
     setPage(1);
-    setRefreshToken((currentValue) => currentValue + 1);
+    refreshEmployees();
+  }
+
+  async function handleDelete(employee) {
+    const confirmed = window.confirm(
+      `Delete ${employee.full_name}? This action cannot be undone.`
+    );
+
+    if (!confirmed) return;
+
+    try {
+      setDeletingEmployeeId(employee.id);
+      setErrorMessage("");
+
+      await employeesApi.remove(employee.id);
+
+      if (employees.length === 1 && page > 1) {
+        setPage((currentPage) => currentPage - 1);
+      } else {
+        refreshEmployees();
+      }
+    } catch (error) {
+      setStatus("error");
+      setErrorMessage(error.message);
+    } finally {
+      setDeletingEmployeeId(null);
+    }
   }
 
   const isLoading = status === "loading";
@@ -77,6 +108,7 @@ function EmployeeList() {
                     <th>Department</th>
                     <th>Salary</th>
                     <th>Employment Type</th>
+                    <th>Actions</th>
                   </tr>
                 </thead>
 
@@ -92,6 +124,18 @@ function EmployeeList() {
                         {Number(employee.salary).toLocaleString()}
                       </td>
                       <td>{employee.employment_type.replaceAll("_", " ")}</td>
+                      <td>
+                        <button
+                          type="button"
+                          className="danger-button"
+                          disabled={deletingEmployeeId === employee.id}
+                          onClick={() => handleDelete(employee)}
+                        >
+                          {deletingEmployeeId === employee.id
+                            ? "Deleting..."
+                            : "Delete"}
+                        </button>
+                      </td>
                     </tr>
                   ))}
                 </tbody>
