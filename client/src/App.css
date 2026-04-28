@@ -200,3 +200,64 @@ button:disabled {
 .secondary-button:hover:not(:disabled) {
   background: #dbeafe;
 }
+
+.filters-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.filters-grid label {
+  display: grid;
+  gap: 0.4rem;
+  color: #374151;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.filters-grid select {
+  border: 1px solid #d1d5db;
+  border-radius: 10px;
+  padding: 0.7rem 0.8rem;
+  font: inherit;
+  background: #ffffff;
+}
+
+.insight-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.insight-card {
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  padding: 1rem;
+  background: #f9fafb;
+}
+
+.insight-card span {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: #6b7280;
+  font-size: 0.875rem;
+}
+
+.insight-card strong {
+  color: #111827;
+  font-size: 1.35rem;
+}
+
+@media (max-width: 900px) {
+  .insight-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 720px) {
+  .filters-grid,
+  .insight-grid {
+    grid-template-columns: 1fr;
+  }
+}
