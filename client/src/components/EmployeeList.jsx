@@ -10,6 +10,7 @@ function EmployeeList() {
   const [status, setStatus] = useState("idle");
   const [errorMessage, setErrorMessage] = useState("");
   const [deletingEmployeeId, setDeletingEmployeeId] = useState(null);
+  const [selectedEmployee, setSelectedEmployee] = useState(null);
 
   const loadEmployees = useCallback(async () => {
     try {
@@ -38,9 +39,19 @@ function EmployeeList() {
     setRefreshToken((currentValue) => currentValue + 1);
   }
 
-  function handleEmployeeCreated() {
+  function handleEmployeeSaved() {
+    setSelectedEmployee(null);
     setPage(1);
     refreshEmployees();
+  }
+
+  function handleEdit(employee) {
+    setSelectedEmployee(employee);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  function handleCancelEdit() {
+    setSelectedEmployee(null);
   }
 
   async function handleDelete(employee) {
@@ -55,6 +66,10 @@ function EmployeeList() {
       setErrorMessage("");
 
       await employeesApi.remove(employee.id);
+
+      if (selectedEmployee?.id === employee.id) {
+        setSelectedEmployee(null);
+      }
 
       if (employees.length === 1 && page > 1) {
         setPage((currentPage) => currentPage - 1);
@@ -74,7 +89,11 @@ function EmployeeList() {
 
   return (
     <>
-      <EmployeeForm onEmployeeCreated={handleEmployeeCreated} />
+      <EmployeeForm
+        selectedEmployee={selectedEmployee}
+        onEmployeeSaved={handleEmployeeSaved}
+        onCancelEdit={handleCancelEdit}
+      />
 
       <section className="card">
         <div className="section-header">
@@ -125,16 +144,26 @@ function EmployeeList() {
                       </td>
                       <td>{employee.employment_type.replaceAll("_", " ")}</td>
                       <td>
-                        <button
-                          type="button"
-                          className="danger-button"
-                          disabled={deletingEmployeeId === employee.id}
-                          onClick={() => handleDelete(employee)}
-                        >
-                          {deletingEmployeeId === employee.id
-                            ? "Deleting..."
-                            : "Delete"}
-                        </button>
+                        <div className="table-actions">
+                          <button
+                            type="button"
+                            className="secondary-button"
+                            onClick={() => handleEdit(employee)}
+                          >
+                            Edit
+                          </button>
+
+                          <button
+                            type="button"
+                            className="danger-button"
+                            disabled={deletingEmployeeId === employee.id}
+                            onClick={() => handleDelete(employee)}
+                          >
+                            {deletingEmployeeId === employee.id
+                              ? "Deleting..."
+                              : "Delete"}
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   ))}

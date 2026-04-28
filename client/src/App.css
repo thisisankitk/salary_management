@@ -184,3 +184,19 @@ button:disabled {
 .danger-button:hover:not(:disabled) {
   background: #fee2e2;
 }
+
+.table-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.secondary-button {
+  border-color: #bfdbfe;
+  color: #1d4ed8;
+  background: #eff6ff;
+}
+
+.secondary-button:hover:not(:disabled) {
+  background: #dbeafe;
+}

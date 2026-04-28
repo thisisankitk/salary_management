@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { employeesApi } from "../api/employees";
 
 const initialFormState = {
@@ -20,12 +20,34 @@ const countryCurrencyMap = {
   Canada: "CAD",
 };
 
-function EmployeeForm({ onEmployeeCreated }) {
+function normalizeEmployeeForForm(employee) {
+  if (!employee) return initialFormState;
+
+  return {
+    full_name: employee.full_name || "",
+    job_title: employee.job_title || "",
+    country: employee.country || "India",
+    salary: employee.salary || "",
+    currency: employee.currency || "INR",
+    department: employee.department || "Engineering",
+    employment_type: employee.employment_type || "full_time",
+    hired_on: employee.hired_on || "",
+  };
+}
+
+function EmployeeForm({ selectedEmployee, onEmployeeSaved, onCancelEdit }) {
   const [formData, setFormData] = useState(initialFormState);
   const [status, setStatus] = useState("idle");
   const [errorMessage, setErrorMessage] = useState("");
 
+  const isEditing = Boolean(selectedEmployee);
   const isSubmitting = status === "submitting";
+
+  useEffect(() => {
+    setFormData(normalizeEmployeeForForm(selectedEmployee));
+    setStatus("idle");
+    setErrorMessage("");
+  }, [selectedEmployee]);
 
   function handleChange(event) {
     const { name, value } = event.target;
@@ -51,35 +73,56 @@ function EmployeeForm({ onEmployeeCreated }) {
       setStatus("submitting");
       setErrorMessage("");
 
-      await employeesApi.create({
+      const payload = {
         ...formData,
         salary: Number(formData.salary),
-      });
+      };
+
+      if (isEditing) {
+        await employeesApi.update(selectedEmployee.id, payload);
+      } else {
+        await employeesApi.create(payload);
+      }
 
       setFormData(initialFormState);
       setStatus("success");
-      onEmployeeCreated();
+      onEmployeeSaved();
     } catch (error) {
       setStatus("error");
       setErrorMessage(error.message);
     }
   }
 
+  function handleCancel() {
+    setFormData(initialFormState);
+    setStatus("idle");
+    setErrorMessage("");
+    onCancelEdit();
+  }
+
   return (
     <section className="card">
       <div className="section-header">
         <div>
-          <h2>Add Employee</h2>
-          <p>Create a new salary record for an employee.</p>
+          <h2>{isEditing ? "Edit Employee" : "Add Employee"}</h2>
+          <p>
+            {isEditing
+              ? "Update salary and employee details."
+              : "Create a new salary record for an employee."}
+          </p>
         </div>
       </div>
 
       {status === "success" && (
-        <p className="success-message">Employee created successfully.</p>
+        <p className="success-message">
+          Employee {isEditing ? "updated" : "created"} successfully.
+        </p>
       )}
 
       {status === "error" && (
-        <p className="error-message">Failed to create employee: {errorMessage}</p>
+        <p className="error-message">
+          Failed to {isEditing ? "update" : "create"} employee: {errorMessage}
+        </p>
       )}
 
       <form className="employee-form" onSubmit={handleSubmit}>
@@ -185,8 +228,20 @@ function EmployeeForm({ onEmployeeCreated }) {
         </label>
 
         <div className="form-actions">
+          {isEditing && (
+            <button type="button" className="secondary-button" onClick={handleCancel}>
+              Cancel
+            </button>
+          )}
+
           <button type="submit" disabled={isSubmitting}>
-            {isSubmitting ? "Creating..." : "Create Employee"}
+            {isSubmitting
+              ? isEditing
+                ? "Updating..."
+                : "Creating..."
+              : isEditing
+                ? "Update Employee"
+                : "Create Employee"}
           </button>
         </div>
       </form>
