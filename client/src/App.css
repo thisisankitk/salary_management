@@ -127,3 +127,50 @@ button:disabled {
   cursor: not-allowed;
   opacity: 0.5;
 }
+
+.employee-form {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.employee-form label {
+  display: grid;
+  gap: 0.4rem;
+  color: #374151;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.employee-form input,
+.employee-form select {
+  border: 1px solid #d1d5db;
+  border-radius: 10px;
+  padding: 0.7rem 0.8rem;
+  font: inherit;
+  background: #ffffff;
+}
+
+.form-actions {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.success-message {
+  padding: 1rem;
+  border-radius: 12px;
+  background: #ecfdf5;
+  color: #047857 !important;
+}
+
+@media (max-width: 720px) {
+  .employee-form {
+    grid-template-columns: 1fr;
+  }
+
+  .app-header,
+  .section-header {
+    flex-direction: column;
+  }
+}
