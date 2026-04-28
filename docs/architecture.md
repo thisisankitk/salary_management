@@ -166,3 +166,10 @@ This avoids scattering fetch logic throughout UI components.
 - Prefer database-level aggregation for performance
 - Keep tests fast, deterministic, and readable
 - Make seed data generation re-runnable and performance-conscious
+
+
+## Security Considerations
+
+The current implementation includes CORS configuration so the browser-based frontend can communicate with the Rails API from an allowed origin.
+
+For a production HR/salary system, API authentication and authorization should be added before handling real salary data. A future enhancement would be to add HR/admin login, bearer-token or session-based authentication, role-based access control, and audit logging for sensitive actions.

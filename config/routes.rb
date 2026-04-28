@@ -13,6 +13,10 @@ Rails.application.routes.draw do
       resources :employees
       resource :salary_insights, only: :show
       resource :employee_options, only: :show
+
+      namespace :admin do
+        post "seed_employees", to: "seed_employees#create"
+      end
     end
   end
 end

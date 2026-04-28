@@ -196,3 +196,12 @@ The backend separates responsibilities using:
 - Seed generation uses `insert_all!` in batches
 - Seed operation is wrapped in a database transaction
 - Indexes are added for country, job title, and country/job title filters
+
+## Future Enhancements
+
+- Add authentication and role-based access control for HR/admin users.
+- Protect API endpoints using session-based authentication or bearer-token authentication.
+- Add audit logs for create, update, and delete employee actions.
+- Add advanced salary analytics such as department-wise averages and salary bands.
+- Add frontend automated tests for critical user flows.
+- Add production-grade monitoring and error tracking.
