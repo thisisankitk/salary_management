@@ -33,7 +33,7 @@ function SalaryInsights() {
 
         setOptions(response);
         setOptionsStatus("success");
-      } catch (_error) {
+      } catch {
         setOptionsStatus("error");
       }
     }

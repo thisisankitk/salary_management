@@ -13,7 +13,7 @@ class EmployeeSerializer
       full_name: employee.full_name,
       job_title: employee.job_title,
       country: employee.country,
-      salary: employee.salary.to_s,
+      salary: employee.salary.to_s("F"),
       currency: employee.currency,
       department: employee.department,
       employment_type: employee.employment_type,

@@ -32,7 +32,7 @@ module Seeders
 
       elapsed_time = Benchmark.realtime do
         Employee.transaction do
-          Employee.delete_all
+          clear_existing_employees!
 
           employee_count.times.each_slice(batch_size) do |indexes|
             records = build_records(indexes)
@@ -61,6 +61,14 @@ module Seeders
       raise "EMPLOYEE_SEED_COUNT must be greater than 0" unless employee_count.positive?
       raise "EMPLOYEE_SEED_BATCH_SIZE must be greater than 0" unless batch_size.positive?
       raise "Employee employment types must be configured" if employment_types.blank?
+    end
+
+    def clear_existing_employees!
+      if Rails.env.production? && ENV["ALLOW_DESTRUCTIVE_SEED"] != "true"
+        raise "Refusing to delete employees in production. Set ALLOW_DESTRUCTIVE_SEED=true to continue."
+      end
+
+      Employee.delete_all
     end
 
     def build_records(indexes)
