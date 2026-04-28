@@ -124,3 +124,29 @@ This reduces database round trips significantly.
 The seed operation is wrapped in a transaction.
 
 If one batch fails, the database rolls back to the previous state instead of being left with partially seeded data.
+
+## Production Seed Endpoint
+
+The production deployment uses a protected seed endpoint because the selected Render free instance does not provide shell access.
+
+```http
+POST /api/v1/admin/seed_employees
+```
+
+The endpoint runs the same performant seed process backed by `Seeders::EmployeeSeeder`, including batch inserts and transaction safety.
+
+It requires a seed token through the request header:
+
+```text
+X-Seed-Token
+```
+
+The token is configured through Render environment variables and is not committed to the repository.
+
+Destructive seeding must also be explicitly enabled with:
+
+```text
+ALLOW_DESTRUCTIVE_SEED=true
+```
+
+After production demo data is seeded, `ALLOW_DESTRUCTIVE_SEED` should be removed or set to `false` to prevent accidental reseeding.

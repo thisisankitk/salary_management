@@ -173,3 +173,47 @@ This avoids scattering fetch logic throughout UI components.
 The current implementation includes CORS configuration so the browser-based frontend can communicate with the Rails API from an allowed origin.
 
 For a production HR/salary system, API authentication and authorization should be added before handling real salary data. A future enhancement would be to add HR/admin login, bearer-token or session-based authentication, role-based access control, and audit logging for sensitive actions.
+
+## Deployment Architecture
+
+The application is deployed as two services from the same repository:
+
+- Rails API backend on Render
+- React/Vite frontend on Vercel
+- PostgreSQL database on Render PostgreSQL
+
+The backend is deployed from the repository root.
+
+The frontend is deployed from the `client/` directory.
+
+The frontend communicates with the backend using:
+
+```text
+https://salary-management-api-mjdq.onrender.com
+```
+
+The backend allows browser requests from the deployed frontend using:
+
+```text
+https://salary-management-amber.vercel.app/
+```
+
+## Production Seeding
+
+Production seed generation is handled by `Seeders::EmployeeSeeder`.
+
+Because the selected Render free instance does not support shell access, a protected seed endpoint is available for demo setup:
+
+```http
+POST /api/v1/admin/seed_employees
+```
+
+This endpoint requires:
+
+```text
+X-Seed-Token
+```
+
+The token is configured through Render environment variables and is not committed to the repository.
+
+For a real production system, this endpoint should either be removed after initial setup or replaced with a safer admin-only operational task.

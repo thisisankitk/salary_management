@@ -28,6 +28,26 @@ A salary management application for HR teams to manage employee salary records a
 - Supports configurable employee count and batch size
 - Uses bulk inserts for performance
 
+## Live Deployment
+
+Frontend UI:
+
+```text
+https://salary-management-amber.vercel.app/
+```
+
+Backend API:
+
+```text
+https://salary-management-api-mjdq.onrender.com
+```
+
+Deployment details are documented in:
+
+```text
+docs/deployment.md
+```
+
 ## Tech Stack
 
 ### Backend
@@ -196,6 +216,10 @@ The backend separates responsibilities using:
 - Seed generation uses `insert_all!` in batches
 - Seed operation is wrapped in a database transaction
 - Indexes are added for country, job title, and country/job title filters
+
+## Additional Notes
+
+- Deployment notes: `docs/deployment.md`
 
 ## Future Enhancements
 
